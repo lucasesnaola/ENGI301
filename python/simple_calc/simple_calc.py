@@ -46,10 +46,16 @@ Operations:
   - subtraction
   - multiplication
   - division
+  - left shift
+  - right shift
+  - modulo
+  - Exponentiation
 
 Error conditions:
   - Invalid operator --> Program should exit
   - Invalid number   --> Program should exit
+  
+Needs to be compatible with Python2
 
 --------------------------------------------------------------------------
 """
