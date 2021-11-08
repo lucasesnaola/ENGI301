@@ -15,17 +15,17 @@ class Joystick():
     switch = None
     
     
-    def __init__(self, vertical="P1_19", horizontal="P1_21", switch="P1_20"):
+    def __init__(self, horizontal="P1_21", vertical="P1_23", switch="P1_20"):
         "Initialize variables and set up display"
         self.vertical = vertical
         self.horizontal = horizontal
         self.switch = switch
         
-        self.setup()
+        self._setup()
         
     #End def
         
-    def setup(self):
+    def _setup(self):
        "Setup hardware components" 
        
        #Initialize switch
@@ -36,8 +36,8 @@ class Joystick():
     
     def read_analog_value(self):
         
-        xvalue = ADC.read_raw(self.vertical)
-        yvalue = ADC.read_raw(self.horizontal)
+        xvalue = ADC.read_raw(self.horizontal)
+        yvalue = ADC.read_raw(self.vertical)
         
         return (xvalue,yvalue)
 
@@ -45,16 +45,17 @@ class Joystick():
        #End def
     
     def get_direction(self):
-        (xvalue,yvalue) = read_analog_value()
         
         (xvalue,yvalue) = self.read_analog_value()
+        #print("xvalue =",xvalue)
+        #print("yvalue =",yvalue)
         
-        if yvalue >= 1500:
-            # Go backward
-            ydirection = 1
-        elif yvalue <= 750:
+        if yvalue <= 750:
             # Go forward
             ydirection = 2
+        elif yvalue >= 1500:
+            # Go backward
+            ydirection = 1
         else:
             # Turn off
             ydirection = 3
@@ -72,8 +73,6 @@ class Joystick():
         return (xdirection,ydirection)
        
     def cleanup(self):
-
-        GPIO.output(self.switch, GPIO.LOW)
         
         GPIO.cleanup()
         

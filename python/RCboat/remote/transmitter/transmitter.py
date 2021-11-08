@@ -37,6 +37,7 @@ import struct
 import board
 import digitalio
 import Adafruit_BBIO.GPIO as GPIO
+import busio
 
 from circuitpython_nrf24l01.rf24 import RF24
 
@@ -44,20 +45,27 @@ from circuitpython_nrf24l01.rf24 import RF24
 # Constants
 # ------------------------------------------------------------------------
 
-
-
+payload_fmt = "<2b"
 
 # ------------------------------------------------------------------------
 # Functions / Classes
 # ------------------------------------------------------------------------
 
-class Receiver():
+class Transmitter():
     ce_pin = None
     csn_pin = None
     spi_bus = None
+    pa_level = None
+    address = None
+    device = None
     
-    def __init__(self, clk_pin=board.SCLK_1, miso_pin=board.MISO_1, mosi_pin = board.MOSI_1,
-                ce_pin=board.P2_24, csn_pin=board.P2_22):
+    def __init__(self, address=[b'1Node', b'2Node'], clk_pin=board.SCLK_1, 
+                    miso_pin=board.MISO_1, mosi_pin = board.MOSI_1,
+                    ce_pin=board.P2_24, csn_pin=board.P2_22, pa_level=-12):
+                        
+        # Set class variables
+        self.pa_level  = pa_level
+        self.address   = address
                 
         #Configuration of ce and csn pins
         self.ce_pin = digitalio.DigitalInOut(ce_pin)
@@ -66,35 +74,41 @@ class Receiver():
         # Setup SPI bus using hardware SPI
         self.spi_bus = busio.SPI(clock=clk_pin, MISO=miso_pin, MOSI=mosi_pin)
         
-        self.setup()
+        # Create the ILI9341 display:
+        self.device = RF24(self.spi_bus, self.csn_pin, self.ce_pin)
+        
+        #Initialize Hardware
+        self._setup()
         
     #End def
     
     def _setup(self):
-        
-        nrf = RF24(spi_bus, csn_pin, ce_pin)
-        
+        """Initialize the display itself"""
         # set the Power Amplifier level to -12 dBm since this test example is
         # usually run with nRF24L01 transceivers in close proximity
-        nrf.pa_level = -12
+        self.device.pa_level = -12
         
         # set RX address of TX node into an RX pipe
-        nrf.open_rx_pipe(b"1Node")  # using pipe 0
+        self.device.open_tx_pipe(self.address[0])
+        self.device.open_rx_pipe(1, self.address[1])
         
     #End def
     
-    def master(self,payload):
+    def master(self, payload, payload_fmt):
         """Polls the radio and prints the received value. This method expires
         after 6 seconds of no received transmission"""
-        nrf.listen = False # put radio into TX mode and power up
+        self.device.listen = False # put radio into TX mode and power up
         
-        if nrf.available():
-            # use struct.pack to packetize your data
-            # into a usable payload
-            buffer = struct.pack("<f", payload[0])
-                
-                
-                
+        # use struct.pack to packetize your data into a usable payload
+        buffer = struct.pack(payload_fmt, *payload)
+        
+        if (False):
+            print(buffer)
+            
+        result = self.device.send(buffer)
+        
+        if not result:
+            print("send() failed or timed out")
                 
     #End def
                 

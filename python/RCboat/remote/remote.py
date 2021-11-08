@@ -38,6 +38,13 @@ import transmitter
 import struct
 import board
 import digitalio
+import busio
+
+# ------------------------------------------------------------------------
+# Constants
+# ------------------------------------------------------------------------
+
+payload_fmt = "<2b"
 
 # ------------------------------------------------------------------------
 # Functions / Classes
@@ -51,10 +58,12 @@ class Remote():
         """ Initialize variables and set up display """
         self.jystk = joystick.Joystick()
         self.trans = transmitter.Transmitter()
+        
+        self._setup()
     
-    def _setup():
-        self.trans.setup()
-        self.jystk.setup()
+    def _setup(self):
+        self.trans._setup()
+        self.jystk._setup()
 
     def run(self):
         
@@ -63,10 +72,12 @@ class Remote():
             (xdirection,ydirection) = self.jystk.get_direction()
             
             payload = [xdirection, ydirection]
+
+            self.trans.master(payload,payload_fmt)
             
-            self.trans.master(payload)
+            time.sleep(1)
         
-    def cleanup(self)
+    def cleanup(self):
         
         self.jystk.cleanup()
 
