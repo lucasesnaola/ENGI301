@@ -86,9 +86,7 @@ class Onboard():
         
         # Initialize Servo; Servo should be "off"
         PWM.start(self.servo, SG90_STRAIGHT, SG90_FREQ, SG90_POL)
-        
-        ADC.setup()
-        
+
         
     def turn_left(self):
         PWM.set_duty_cycle(self.servo, SG90_LEFT)
@@ -113,61 +111,14 @@ class Onboard():
         GPIO.output(self.enable,GPIO.LOW)
         GPIO.output(self.in1,GPIO.LOW)
         GPIO.output(self.in2,GPIO.LOW)
-    
-    def read_analog_value(self):
-        
-        xvalue = ADC.read_raw(self.vertical)
-        yvalue = ADC.read_raw(self.horizontal)
-        
-        return (xvalue,yvalue)
-        
-    def get_direction(self):
-        (xvalue,yvalue) = self.read_analog_value()
-        
-        print("x = {0}".format(xvalue))
-        print("y = {0}".format(yvalue))
-        
-        if yvalue >= 1500:
-            # Go backward
-            ydirection = 1
-        elif yvalue <= 750:
-            # Go forward
-            ydirection = 2
-        else:
-            # Turn off
-            ydirection = 3
-            
-        #if yvalue <= 750:
-        # Go forward
-        #    ydirection = 2
-        #else: 
-        #    ydirection = 3
-            
-        if xvalue <= 750:
-            # Go Right
-            xdirection = 1
-        elif xvalue >= 1500:
-            # Go Left
-            xdirection = 2
-        else: 
-            # Go Straight
-            xdirection = 3
-            
-        #if xvalue >= 1500:
-        # Go left
-        #    xdirection = 2
-        #else:
-        #    xdirection = 3
-            
-        return (xdirection,ydirection)
+
         
     def run(self):
         
         while(1):
         
-            (xdirection,ydirection) = self.get_direction()
-            print("x = {0}".format(xdirection))
-            print("y = {0}".format(ydirection))
+            #(xdirection,ydirection) = self.get_direction()
+
         
             if xdirection == 1:
                 self.turn_right()
@@ -202,7 +153,7 @@ class Onboard():
         
         PWM.stop(self.servo)
         PWM.cleanup()
-        
+        GPIO.cleanup()
         
 
 
