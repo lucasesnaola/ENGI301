@@ -37,4 +37,4 @@
 
 cd /var/lib/cloud9/ENGI301/python/RCboat/onboard
 ./configure_pins.sh
-PYTHONPATH=/var/lib/cloud9/ENGI301/python/RCboat/joystick python3 onboard.py
+PYTHONPATH=/var/lib/cloud9/ENGI301/python/RCboat/onboard/receiver python3 onboard.py

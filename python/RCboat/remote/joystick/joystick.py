@@ -39,32 +39,35 @@ class Joystick():
         xvalue = ADC.read_raw(self.vertical)
         yvalue = ADC.read_raw(self.horizontal)
         
-        print(xvalue)
-        print(yvalue)
-        
         return (xvalue,yvalue)
 
        
        #End def
     
     def get_direction(self):
+        (xvalue,yvalue) = read_analog_value()
+        
         (xvalue,yvalue) = self.read_analog_value()
         
         if yvalue >= 1500:
-        # Go forward
-            ydirection = True
-        
-        if yvalue <= 750:
-        # Go backward
-            ydirection = False
+            # Go backward
+            ydirection = 1
+        elif yvalue <= 750:
+            # Go forward
+            ydirection = 2
+        else:
+            # Turn off
+            ydirection = 3
             
         if xvalue <= 750:
-        # Go Left
-            xdirection = False
-            
-        if xvalue >= 1500:
-        # Go right
-            xdirection = True
+            # Go Right
+            xdirection = 1
+        elif xvalue >= 1500:
+            # Go Left
+            xdirection = 2
+        else: 
+            # Go Straight
+            xdirection = 3
             
         return (xdirection,ydirection)
        
@@ -82,11 +85,4 @@ class Joystick():
 if __name__ == '__main__':
     
     joystick=Joystick()
-    
-    try:
-        (xvalue,yvalue) = joystick.read_analog_value()
-        
-        
-    except KeyboardInterrupt:
-        joystick.cleanup()
-    
+

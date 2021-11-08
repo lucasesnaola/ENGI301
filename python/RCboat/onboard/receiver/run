@@ -1,6 +1,6 @@
 #!/bin/bash
 # --------------------------------------------------------------------------
-# Combination Lock - Configure Pins
+# Combination Lock - Run Script
 # --------------------------------------------------------------------------
 # License:   
 # Copyright 2020 Erik Welsh
@@ -31,21 +31,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # --------------------------------------------------------------------------
 # 
-# Configure pins for Combination Lock:
-#   - I2C1
-#   - Button
-#   - LEDs (Red / Green)
-#   - Servo
+# Run Combination Lock in /var/lib/cloud9/ENGI301/python/combo_lock
 # 
 # --------------------------------------------------------------------------
-
-# I2C1
-config-pin P2_09 i2c
-config-pin P2_11 i2c
-
-# Button
-config-pin P1_20 gpio
-
-
-
-
+cd /var/lib/cloud9/ENGI301/python/RCboat/onboard/receiver
+./configure_pins.sh
+PYTHONPATH=/var/lib/cloud9/ENGI301/python/RCboat/onboard/receiver python3 receiver.py

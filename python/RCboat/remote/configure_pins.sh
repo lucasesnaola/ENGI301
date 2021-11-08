@@ -37,8 +37,18 @@
 # 
 # --------------------------------------------------------------------------
 
-#Transmitter
-config-pin P2_7 uart
+#CSN
+config-pin P2_22 gpio
 
-#Joystick
+#CE
+config-pin P2_24 gpio
+
+# SPI0s
+config-pin P2_29 spi_sclk #SCK
+config-pin P2_27 spi #MISO
+config-pin P2_25 spi #MOSI
+
+# Switch
 config-pin P1_20 gpio
+
+

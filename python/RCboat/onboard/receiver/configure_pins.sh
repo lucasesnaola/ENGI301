@@ -1,9 +1,9 @@
 #!/bin/bash
 # --------------------------------------------------------------------------
-# Onboard components- Run Script
+# Combination Lock - Run Script
 # --------------------------------------------------------------------------
 # License:   
-# Copyright 2020 Lucas Esnaola
+# Copyright 2020 Erik Welsh
 # 
 # Redistribution and use in source and binary forms, with or without 
 # modification, are permitted provided that the following conditions are met:
@@ -31,10 +31,18 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # --------------------------------------------------------------------------
 # 
-# Run onboard in /var/lib/cloud9/ENGI301/python/RCboat/onboard
+# Run Combination Lock in /var/lib/cloud9/ENGI301/python/combo_lock
 # 
 # --------------------------------------------------------------------------
 
-cd /var/lib/cloud9/ENGI301/python/RCboat/remote
-./configure_pins.sh
-PYTHONPATH=/var/lib/cloud9/ENGI301/python/RCboat/remote/joystick:/var/lib/cloud9/ENGI301/python/RCboat/remote/transmitter python3 remote.py
+#CSN
+config-pin P2_22 gpio
+
+#CE
+config-pin P2_24 gpio
+
+# SPI0s
+config-pin P2_29 spi_sclk #SCK
+config-pin P2_27 spi #MISO
+config-pin P2_25 spi #MOSI
+

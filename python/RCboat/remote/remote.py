@@ -33,23 +33,58 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 import time
 import Adafruit_BBIO.GPIO as GPIO
-import Adafruit_BBIO.UART as UART
-import serial
+import joystick
+import transmitter
+import struct
+import board
+import digitalio
 
 # ------------------------------------------------------------------------
-# Constants
+# Functions / Classes
 # ------------------------------------------------------------------------
-SG90_FREQ       = 50        # 20ms period (50Hz)
-SG90_POL        = 0         # Rising Edge polarity
-SG90_STRAIGHT   = 7.5       # 1.5 ms pulse (7.5% duty cycle) -- In the middle
-SG90_RIGHT      = 5         # 1 ms pulse (5% duty cycle) -- All the way Right
-SG90_LEFT       = 10        # 2ms pulse (10% duty cycle) -- All the way Left
 
-SG90_OFF    = SG90_CLOSE          # Set the "off" state to "closed"
+class Remote():
+    trans = None
+    jystk = None
+    
+    def __init__(self):
+        """ Initialize variables and set up display """
+        self.jystk = joystick.Joystick()
+        self.trans = transmitter.Transmitter()
+    
+    def _setup():
+        self.trans.setup()
+        self.jystk.setup()
+
+    def run(self):
+        
+        while(1):
+        
+            (xdirection,ydirection) = self.jystk.get_direction()
+            
+            payload = [xdirection, ydirection]
+            
+            self.trans.master(payload)
+        
+    def cleanup(self)
+        
+        self.jystk.cleanup()
+
 
 # ------------------------------------------------------------------------
 # Main script
 # ------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    pass
+    
+    print("Program Start")
+    
+    remote = Remote()
+    
+    try: 
+        remote.run()
+    
+    except KeyboardInterrupt:
+        remote.cleanup()
+        
+    print("Program Complete")

@@ -37,6 +37,7 @@ import Adafruit_BBIO.PWM as PWM
 import Adafruit_BBIO.UART as UART
 import Adafruit_BBIO.ADC as ADC
 import serial
+import receiver
 #import joystick
 
 
@@ -56,23 +57,22 @@ SG90_LEFT        = 10                  # 2ms pulse (10% duty cycle) -- All the w
 
 class Onboard():
     servo = None
-    #joystick=None
+    rcvr=None
     enable=None
     in1=None
     in2=None
-    vertical = None
-    horizontal = None
+    button=None
+    stop_time=None
     
-    def __init__(self, horizontal="P1_21", vertical="P1_19", switch="P1_20", 
-                enable="P1_10", in1="P1_6", in2="P1_8",servo="P2_1"):
+    def __init__(self, enable="P1_10", in1="P1_6", in2="P1_8",servo="P2_1",button="P1_36",stop_time=2):
          """ Initialize variables and set up display """
          self.servo = servo
-         #self.joystick = joystick.Joystick()
+         self.rcvr = receiver.Receiver()
          self.enable = enable
          self.in1 = in1
          self.in2 = in2
-         self.vertical = vertical
-         self.horizontal = horizontal
+         self.button = button
+         self.stop_time=stop_time
          
          self._setup()
     
@@ -86,6 +86,11 @@ class Onboard():
         
         # Initialize Servo; Servo should be "off"
         PWM.start(self.servo, SG90_STRAIGHT, SG90_FREQ, SG90_POL)
+        
+        self.rcvr.setup()
+        
+        # Initialize Button
+        GPIO.setup(self.button, GPIO.IN)
 
         
     def turn_left(self):
@@ -115,23 +120,20 @@ class Onboard():
         
     def run(self):
         
-        while(1):
+        button_press_time            = 0.0
         
-            #(xdirection,ydirection) = self.get_direction()
-
-        
+        while(GPIO.input(self.button)==1):
+            (xdirection,ydirection) = self.rcvr.slave()
+                
             if xdirection == 1:
                 self.turn_right()
-            
             
             if xdirection == 2:
                 self.turn_left()
             
-        
             if ydirection == 2:
                 self.forward()
             
-        
             if ydirection == 1:
                 self.backward()
                 
@@ -140,9 +142,11 @@ class Onboard():
                 
             if ydirection == 3:
                 self.motor_stop()
+
+            time.sleep(0.2)
             
-            
-            time.sleep(1)
+        self.cleanup()
+        
     #End def
             
         
@@ -154,6 +158,7 @@ class Onboard():
         PWM.stop(self.servo)
         PWM.cleanup()
         GPIO.cleanup()
+        self.rcvr.cleanup()
         
 
 

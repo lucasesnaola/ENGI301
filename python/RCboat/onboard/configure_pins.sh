@@ -42,9 +42,21 @@
 config-pin P2_01 pwm
 
 #Reciever
-config-pin P1_32 uart
+#CSN
+config-pin P2_22 gpio
+
+#CE
+config-pin P2_24 gpio
+
+# SPI0s
+config-pin P2_29 spi_sclk #SCK
+config-pin P2_27 spi #MISO
+config-pin P2_25 spi #MOSI
 
 #L293D
 config-pin P1_06 gpio
 config-pin P1_08 gpio
 config-pin P1_10 gpio
+
+#Button
+config-pin P1_36 gpio
