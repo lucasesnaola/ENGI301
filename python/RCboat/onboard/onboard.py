@@ -34,11 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import time
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.PWM as PWM
-import Adafruit_BBIO.UART as UART
 import Adafruit_BBIO.ADC as ADC
-import serial
 import receiver
-#import joystick
+
 
 
 # ------------------------------------------------------------------------
@@ -51,6 +49,8 @@ SG90_STRAIGHT    = 7.5                 # 0ms pulse -- Servo is inactive
 SG90_RIGHT       = 5                   # 1ms pulse (5% duty cycle)  -- All the way right
 SG90_LEFT        = 10                  # 2ms pulse (10% duty cycle) -- All the way Left
 
+payload_fmt = "<2b"
+
 # ------------------------------------------------------------------------
 # Functions / Classes
 # ------------------------------------------------------------------------
@@ -62,9 +62,8 @@ class Onboard():
     in1=None
     in2=None
     button=None
-    stop_time=None
     
-    def __init__(self, enable="P1_10", in1="P1_6", in2="P1_8",servo="P2_1",button="P1_36",stop_time=2):
+    def __init__(self, enable="P1_10", in1="P1_6", in2="P1_8",servo="P2_1",button="P1_36"):
          """ Initialize variables and set up display """
          self.servo = servo
          self.rcvr = receiver.Receiver()
@@ -72,7 +71,6 @@ class Onboard():
          self.in1 = in1
          self.in2 = in2
          self.button = button
-         self.stop_time=stop_time
          
          self._setup()
     
@@ -87,7 +85,7 @@ class Onboard():
         # Initialize Servo; Servo should be "off"
         PWM.start(self.servo, SG90_STRAIGHT, SG90_FREQ, SG90_POL)
         
-        self.rcvr.setup()
+        self.rcvr._setup()
         
         # Initialize Button
         GPIO.setup(self.button, GPIO.IN)
@@ -120,10 +118,9 @@ class Onboard():
         
     def run(self):
         
-        button_press_time            = 0.0
-        
         while(GPIO.input(self.button)==1):
-            (xdirection,ydirection) = self.rcvr.slave()
+            
+            (xdirection,ydirection) = self.rcvr.slave(payload_fmt)
                 
             if xdirection == 1:
                 self.turn_right()
@@ -131,19 +128,19 @@ class Onboard():
             if xdirection == 2:
                 self.turn_left()
             
+            if xdirection == 3:
+                self.go_straight()
+            
             if ydirection == 2:
                 self.forward()
             
             if ydirection == 1:
                 self.backward()
                 
-            if xdirection == 3:
-                self.go_straight()
-                
             if ydirection == 3:
                 self.motor_stop()
 
-            time.sleep(0.2)
+            time.sleep(0.1)
             
         self.cleanup()
         
@@ -176,4 +173,5 @@ if __name__ == '__main__':
     
     except KeyboardInterrupt:
         onboard.cleanup()
+        
     print("Program Complete")

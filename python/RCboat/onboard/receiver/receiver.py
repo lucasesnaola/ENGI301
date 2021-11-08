@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import time
 import struct
+import busio
 import board
 import digitalio
 import Adafruit_BBIO.GPIO as GPIO
@@ -44,8 +45,7 @@ from circuitpython_nrf24l01.rf24 import RF24
 # Constants
 # ------------------------------------------------------------------------
 
-
-
+payload_fmt = "<2b"
 
 # ------------------------------------------------------------------------
 # Functions / Classes
@@ -55,9 +55,17 @@ class Receiver():
     ce_pin = None
     csn_pin = None
     spi_bus = None
+    pa_level = None
+    address = None
+    device = None
     
-    def __init__(self, clk_pin=board.SCLK_1, miso_pin=board.MISO_1, mosi_pin = board.MOSI_1,
-                ce_pin=board.P2_24, csn_pin=board.P2_22):
+    def __init__(self, address=[b'1Node', b'2Node'], clk_pin=board.SCLK_1, 
+                    miso_pin=board.MISO_1, mosi_pin = board.MOSI_1,
+                    ce_pin=board.P2_24, csn_pin=board.P2_22, pa_level=-12):
+                        
+        # Set class variables
+        self.pa_level  = pa_level
+        self.address   = address
                 
         #Configuration of ce and csn pins
         self.ce_pin = digitalio.DigitalInOut(ce_pin)
@@ -66,55 +74,65 @@ class Receiver():
         # Setup SPI bus using hardware SPI
         self.spi_bus = busio.SPI(clock=clk_pin, MISO=miso_pin, MOSI=mosi_pin)
         
-        self.setup()
+        # Create the ILI9341 display:
+        self.device = RF24(self.spi_bus, self.csn_pin, self.ce_pin)
+        
+        #Initialize Hardware
+        self._setup()
         
     #End def
     
     def _setup(self):
-        
-        nrf = RF24(spi_bus, csn_pin, ce_pin)
-        
+        """Initialize the display itself"""
         # set the Power Amplifier level to -12 dBm since this test example is
         # usually run with nRF24L01 transceivers in close proximity
-        nrf.pa_level = -12
-        
-        # set RX address of TX node into an RX pipe
-        nrf.open_rx_pipe(1, b"2Node")  # using pipe 1
+        self.device.pa_level = -12
+
+        self.device.open_tx_pipe(self.address[1])
+        self.device.open_rx_pipe(1, self.address[0])
         
     #End def
     
-    def slave(self, timeout=6):
+    def slave(self, payload_fmt, timeout=6):
         """Polls the radio and prints the received value. This method expires
         after 6 seconds of no received transmission"""
-        nrf.listen = True  # put radio into RX mode and power up
+        self.device.listen = True  # put radio into RX mode and power up
         
-        start = time.monotonic()
-        while (time.monotonic() - start) < timeout:
-            if nrf.available():
+        start   = time.time()
+
+        while (time.time() - start) < timeout:
+            
+            if self.device.available():
                 
                 # grab information about the received payload
-                payload_size, pipe_number = (nrf.any(), nrf.pipe)
+                payload_size, pipe_number = (self.device.any(), self.device.pipe)
                 
                 # fetch 1 payload from RX FIFO
-                buffer = nrf.read()  # also clears nrf.irq_dr status flag
+                buffer = self.device.read()  # also clears nrf.irq_dr status flag
                 
-                # expecting a little endian float, thus the format string "<f"
-                # buffer[:4] truncates padded 0s if dynamic payloads are disabled
-                payload[0] = struct.unpack("<f", buffer[:4])[0]
+               
+                payload = struct.unpack(payload_fmt, buffer)
                 
-                # print details about the received packet
-                print("Received {} bytes on pipe {}: {}".format(
-                    payload_size, pipe_number, payload[0]))
-                start = time.monotonic
+                if (False):       
+                    print(payload)
+                 
+                xdirection = payload[0]
+                ydirection = payload[1]
                 
-                return ()
+                start = time.time()
+                
+            else: 
+                xdirection = 3
+                ydirection = 3
+                
+            return (xdirection,ydirection)
                 
                 
     #End def
                 
-    def cleanup()
+    def cleanup(self):
     
-        nrf.listen = False  #Put the nRF24L01 in TX mode when idle
+        self.device.listen = False #Put the nRF24L01 in TX mode when idle
         
     #End def
 

@@ -100,7 +100,6 @@ class PeopleCounter():
         button_press_time            = 0.0      # Time button was pressed (in seconds)
         
         while(1):
-            pass # Remove this line
     
             # Wait for button press
             while(GPIO.input(self.button)==1):
