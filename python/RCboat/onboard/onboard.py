@@ -62,8 +62,10 @@ class Onboard():
     in1=None
     in2=None
     button=None
+    green_led=None
     
-    def __init__(self, enable="P1_10", in1="P1_6", in2="P1_8",servo="P2_1",button="P1_36"):
+    def __init__(self, enable="P2_2", in1="P1_6", in2="P1_8",servo="P2_1",
+                 button="P1_36", green_led="P1_35"):
          """ Initialize variables and set up display """
          self.servo = servo
          self.rcvr = receiver.Receiver()
@@ -71,6 +73,7 @@ class Onboard():
          self.in1 = in1
          self.in2 = in2
          self.button = button
+         self.green_led = green_led
          
          self._setup()
     
@@ -80,6 +83,9 @@ class Onboard():
         GPIO.setup(self.enable, GPIO.OUT)
         GPIO.setup(self.in1, GPIO.OUT)
         GPIO.setup(self.in2, GPIO.OUT)
+        
+        #Intialize the LED
+        GPIO.setup(self.green_led, GPIO.OUT)
 
         
         # Initialize Servo; Servo should be "off"
@@ -120,7 +126,21 @@ class Onboard():
         
         while(GPIO.input(self.button)==1):
             
-            (xdirection,ydirection) = self.rcvr.slave(payload_fmt)
+            GPIO.output(self.green_led,GPIO.HIGH)
+            
+            (payload) = self.rcvr.slave(payload_fmt)
+            
+            if payload is None:
+                xdirection = 0
+                ydirection = 0
+            
+            else:
+                xdirection = payload[0]
+                ydirection = payload[1]
+                
+            print("xdirection=",xdirection)
+            print("ydirection=",ydirection)
+                
                 
             if xdirection == 1:
                 self.turn_right()
@@ -140,7 +160,7 @@ class Onboard():
             if ydirection == 3:
                 self.motor_stop()
 
-            time.sleep(0.1)
+            time.sleep(0.2)
             
         self.cleanup()
         
@@ -148,6 +168,7 @@ class Onboard():
             
         
     def cleanup(self):
+        GPIO.output(self.green_led,GPIO.LOW)
         GPIO.output(self.enable, GPIO.LOW)
         GPIO.output(self.in1,GPIO.LOW)
         GPIO.output(self.in2,GPIO.LOW)
@@ -156,6 +177,7 @@ class Onboard():
         PWM.cleanup()
         GPIO.cleanup()
         self.rcvr.cleanup()
+        
         
 
 

@@ -99,7 +99,8 @@ class Receiver():
         self.device.listen = True  # put radio into RX mode and power up
         
         start   = time.time()
-
+        payload = None
+        
         while (time.time() - start) < timeout:
             
             if self.device.available():
@@ -116,16 +117,9 @@ class Receiver():
                 if (False):       
                     print(payload)
                  
-                xdirection = payload[0]
-                ydirection = payload[1]
+                return (payload)
                 
-                start = time.time()
-                
-            else: 
-                xdirection = 3
-                ydirection = 3
-                
-            return (xdirection,ydirection)
+            
                 
                 
     #End def

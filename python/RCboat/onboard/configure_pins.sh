@@ -56,7 +56,11 @@ config-pin P2_25 spi #MOSI
 #L293D
 config-pin P1_06 gpio
 config-pin P1_08 gpio
-config-pin P1_10 gpio
+config-pin P2_02 gpio
 
 #Button
 config-pin P1_36 gpio
+
+#LED
+config-pin P1_35 gpio
+
