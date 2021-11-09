@@ -75,7 +75,7 @@ class Remote():
 
             self.trans.master(payload,payload_fmt)
             
-            time.sleep(1)
+            time.sleep(0.2)
         
     def cleanup(self):
         

@@ -39,7 +39,7 @@ import digitalio
 import Adafruit_BBIO.GPIO as GPIO
 import busio
 
-from circuitpython_nrf24l01.rf24 import RF24
+
 
 # ------------------------------------------------------------------------
 # Constants
@@ -107,8 +107,8 @@ class Transmitter():
             
         result = self.device.send(buffer)
         
-        if not result:
-            print("send() failed or timed out")
+        #if not result:
+            #print("send() failed or timed out")
                 
     #End def
                 
