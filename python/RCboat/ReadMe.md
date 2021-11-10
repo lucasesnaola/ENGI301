@@ -51,3 +51,4 @@ Once all libraries and code are installed in the Pocket Beagles, enter the code 
 sudo crontab -e
 #Once in the crontab
 @reboot sleep 30 && sh <your run file path> >/var/lib/cloud9/logs/cronlog 2>&1
+Then reboot your device. 
