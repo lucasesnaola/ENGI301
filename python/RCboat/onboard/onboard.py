@@ -40,7 +40,9 @@ Requirements:
    
 Uses:
     -The receiver library contained within the onboard directory
-
+    
+Links:
+   -https://www.hackster.io/hoffmanjon/controlling-a-motor-with-an-h-bridge-fd13b2
 
 """
 import time
