@@ -1,6 +1,6 @@
 #!/bin/bash
 # --------------------------------------------------------------------------
-# Combination Lock - Configure Pins
+# Remote Control - Configure Pins
 # --------------------------------------------------------------------------
 # License:   
 # Copyright 2020 Lucas Esnaola
@@ -48,7 +48,6 @@ config-pin P2_29 spi_sclk #SCK
 config-pin P2_27 spi #MISO
 config-pin P2_25 spi #MOSI
 
-# Switch
-config-pin P1_20 gpio
+
 
 
