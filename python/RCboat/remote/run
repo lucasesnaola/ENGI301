@@ -1,6 +1,6 @@
 #!/bin/bash
 # --------------------------------------------------------------------------
-# Onboard components- Run Script
+# Remote Control- Run Script
 # --------------------------------------------------------------------------
 # License:   
 # Copyright 2020 Lucas Esnaola
@@ -31,7 +31,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # --------------------------------------------------------------------------
 # 
-# Run onboard in /var/lib/cloud9/ENGI301/python/RCboat/onboard
+# Run remote in /var/lib/cloud9/ENGI301/python/RCboat/remote
 # 
 # --------------------------------------------------------------------------
 
