@@ -1,6 +1,6 @@
 #!/bin/bash
 # --------------------------------------------------------------------------
-# Combination Lock - Configure Pins
+# Onboard - Configure Pins
 # --------------------------------------------------------------------------
 # License:   
 # Copyright 2020 Lucas Esnaola
@@ -31,10 +31,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # --------------------------------------------------------------------------
 # 
-# Configure pins for Combination Lock:
+# Configure pins for Onboard Components:
 #   - Servo
 #   - Receiver
 #   - L293D
+#   - Button
+#   - LED
 # 
 # --------------------------------------------------------------------------
 
