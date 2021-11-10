@@ -30,6 +30,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
+This program transmits data collected from the joystick
+
+Requirements:
+   -Collect the motor state values from the joystick
+   -Transmit those values to the receiver on the boat
+
+Uses:
+    -The transmitter library contained within the remote directory
+    -The joystick library contained within the remote directory
 """
 import time
 import Adafruit_BBIO.GPIO as GPIO
@@ -44,13 +53,14 @@ import busio
 # Constants
 # ------------------------------------------------------------------------
 
-payload_fmt = "<2b"
+payload_fmt = "<2b"  #The payload format
 
 # ------------------------------------------------------------------------
 # Functions / Classes
 # ------------------------------------------------------------------------
 
 class Remote():
+    """Remote control components"""
     trans = None
     jystk = None
     
@@ -62,23 +72,28 @@ class Remote():
         self._setup()
     
     def _setup(self):
+        """Setup hardware components"""
         self.trans._setup()
         self.jystk._setup()
 
     def run(self):
+        """Executes main program"""
         
         while(1):
         
+            #Collects state values from the joystick program
             (xdirection,ydirection) = self.jystk.get_direction()
             
+            #Create payload
             payload = [xdirection, ydirection]
-
+            
+            #Transmits payload using the transmiiter function
             self.trans.master(payload,payload_fmt)
             
             time.sleep(0.2)
         
     def cleanup(self):
-        
+        """Cleans up hardware components"""
         self.jystk.cleanup()
 
 
@@ -89,10 +104,11 @@ class Remote():
 if __name__ == '__main__':
     
     print("Program Start")
-    
+    #Create instantiation of the remote program
     remote = Remote()
     
     try: 
+        #Runs the remote program
         remote.run()
     
     except KeyboardInterrupt:
