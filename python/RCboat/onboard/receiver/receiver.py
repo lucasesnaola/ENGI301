@@ -1,6 +1,6 @@
 """
 --------------------------------------------------------------------------
-Onboard Components
+Receiver
 --------------------------------------------------------------------------
 License:   
 Copyright 2020 Lucas Esnaola
@@ -30,6 +30,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
+This program receives the payload data sent out by the transmitter on the remote control
+
+Software Setup:
+  - sudo apt-get update
+  - sudo pip3 install circuitpython-nrf24l01
+  
+ Links:
+  - https://circuitpython-nrf24l01.readthedocs.io/en/latest/
+  - https://circuitpython-nrf24l01.readthedocs.io/en/latest/examples.html#simple-
+test
 """
 
 import time
@@ -45,13 +55,14 @@ from circuitpython_nrf24l01.rf24 import RF24
 # Constants
 # ------------------------------------------------------------------------
 
-payload_fmt = "<2b"
+payload_fmt = "<2b"             # The receiver and transmitter payload formats
 
 # ------------------------------------------------------------------------
 # Functions / Classes
 # ------------------------------------------------------------------------
 
 class Receiver():
+    """Receiver components"""
     ce_pin = None
     csn_pin = None
     spi_bus = None
@@ -62,6 +73,7 @@ class Receiver():
     def __init__(self, address=[b'1Node', b'2Node'], clk_pin=board.SCLK_1, 
                     miso_pin=board.MISO_1, mosi_pin = board.MOSI_1,
                     ce_pin=board.P2_24, csn_pin=board.P2_22, pa_level=-12):
+        """ Initialize variables and begin set up"""
                         
         # Set class variables
         self.pa_level  = pa_level
@@ -83,11 +95,13 @@ class Receiver():
     #End def
     
     def _setup(self):
-        """Initialize the display itself"""
+        """Initialize the receiver itself"""
         # set the Power Amplifier level to -12 dBm since this test example is
         # usually run with nRF24L01 transceivers in close proximity
         self.device.pa_level = -12
-
+        
+        #Inform reciever and transmitter of their and each others address
+        #Open the pipes for wireless data sharing
         self.device.open_tx_pipe(self.address[1])
         self.device.open_rx_pipe(1, self.address[0])
         
@@ -108,10 +122,10 @@ class Receiver():
                 # grab information about the received payload
                 payload_size, pipe_number = (self.device.any(), self.device.pipe)
                 
-                # fetch 1 payload from RX FIFO
+                # fetch payload from RX FIFO
                 buffer = self.device.read()  # also clears nrf.irq_dr status flag
                 
-               
+                # Unpack the payload
                 payload = struct.unpack(payload_fmt, buffer)
                 
                 if (False):       
@@ -125,6 +139,7 @@ class Receiver():
     #End def
                 
     def cleanup(self):
+        """Clean up the hardware components"""
     
         self.device.listen = False #Put the nRF24L01 in TX mode when idle
         
@@ -138,7 +153,7 @@ class Receiver():
 # ------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    
+    #Create instantiation of the onboard program
     receiver=Receiver()
       
     
