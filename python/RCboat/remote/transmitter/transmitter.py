@@ -1,6 +1,6 @@
 """
 --------------------------------------------------------------------------
-Onboard Components
+Transmitter
 --------------------------------------------------------------------------
 License:   
 Copyright 2020 Lucas Esnaola
@@ -30,6 +30,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------
+The program transmits data from the joystick to the reciever on the boat
+
+
+Software Setup:
+  - sudo apt-get update
+  - sudo pip3 install circuitpython-nrf24l01
+  
+ Links:
+  - https://circuitpython-nrf24l01.readthedocs.io/en/latest/
+  - https://circuitpython-nrf24l01.readthedocs.io/en/latest/examples.html#simple-test
+
 """
 
 import time
@@ -39,19 +50,20 @@ import digitalio
 import Adafruit_BBIO.GPIO as GPIO
 import busio
 
-
+from circuitpython_nrf24l01.rf24 import RF24
 
 # ------------------------------------------------------------------------
 # Constants
 # ------------------------------------------------------------------------
 
-payload_fmt = "<2b"
+payload_fmt = "<2b"         #The payload format
 
 # ------------------------------------------------------------------------
 # Functions / Classes
 # ------------------------------------------------------------------------
 
 class Transmitter():
+    """Transmitter components"""
     ce_pin = None
     csn_pin = None
     spi_bus = None
@@ -62,6 +74,7 @@ class Transmitter():
     def __init__(self, address=[b'1Node', b'2Node'], clk_pin=board.SCLK_1, 
                     miso_pin=board.MISO_1, mosi_pin = board.MOSI_1,
                     ce_pin=board.P2_24, csn_pin=board.P2_22, pa_level=-12):
+        """ Initialize variables and begin set up"""
                         
         # Set class variables
         self.pa_level  = pa_level
@@ -95,8 +108,7 @@ class Transmitter():
     #End def
     
     def master(self, payload, payload_fmt):
-        """Polls the radio and prints the received value. This method expires
-        after 6 seconds of no received transmission"""
+        """Transmits the current payload"""
         self.device.listen = False # put radio into TX mode and power up
         
         # use struct.pack to packetize your data into a usable payload
@@ -107,8 +119,9 @@ class Transmitter():
             
         result = self.device.send(buffer)
         
-        #if not result:
-            #print("send() failed or timed out")
+        #Error message for when the transmission in unsuccsesful
+        if not result:
+            print("send() failed or timed out")
                 
     #End def
                 
@@ -120,6 +133,7 @@ class Transmitter():
 # ------------------------------------------------------------------------
 
 if __name__ == '__main__':
+    #Create instantiation of the transmitter program
     
     transmitter=Transmitter()
       
