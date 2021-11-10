@@ -100,8 +100,7 @@ class Receiver():
         # usually run with nRF24L01 transceivers in close proximity
         self.device.pa_level = -12
         
-        #Inform reciever and transmitter of their and each others address
-        #Open the pipes for wireless data sharing
+        # set RX address of TX node into an RX pipe
         self.device.open_tx_pipe(self.address[1])
         self.device.open_rx_pipe(1, self.address[0])
         
@@ -153,7 +152,7 @@ class Receiver():
 # ------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    #Create instantiation of the onboard program
+    #Create instantiation of the receiver program
     receiver=Receiver()
       
     
